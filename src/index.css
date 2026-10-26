@@ -1,0 +1,57 @@
+:root {
+  --bg: #05060f;
+  --bg-2: #0a0d22;
+  --ink: #e9ecf5;
+  --muted: #8a90a6;
+  --dim: #565c74;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.14);
+  --neon: #ff2bd6;
+  --cyan: #4ad7ff;
+  --gold: #ffd100;
+  --gold-soft: #e6cc80;
+  --green: #1eff00;
+  --display: 'Bebas Neue', 'Anton', Impact, sans-serif;
+  --body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  color-scheme: dark;
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(1100px 520px at 50% -140px, rgba(120, 170, 255, 0.20), transparent 70%),
+    radial-gradient(700px 420px at 8% -60px, rgba(255, 43, 214, 0.16), transparent 70%),
+    radial-gradient(700px 420px at 92% -60px, rgba(74, 215, 255, 0.14), transparent 70%),
+    radial-gradient(1400px 500px at 50% 115%, rgba(30, 140, 80, 0.16), transparent 70%),
+    linear-gradient(180deg, #080b20 0%, #05060f 55%, #04050b 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+/* Subtle film grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+#root { position: relative; z-index: 1; }
+button { font: inherit; color: inherit; }
+.tnum { font-variant-numeric: tabular-nums; }
+.coin { color: var(--gold); }
+.muted { color: var(--muted); font-size: 13px; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}
