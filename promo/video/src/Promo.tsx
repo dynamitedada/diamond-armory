@@ -105,7 +105,7 @@ export const Promo: React.FC = () => {
         <Kinetic duration={s(2)} align={V ? 'center' : 'left'} x={V ? 50 : 5} y={V ? 82 : 22} lines={[{ text: 'YOUR', size: 110 }, { text: 'LEATHER.', size: 160, color: C.legendary }]} />
       </At>
       <At a={43} b={45} name="headgear">
-        <Footage src="headgear" from={4.6} duration={s(2)} push={[1.02, 1.07]} crop={V ? { x: 960, y: 540, s: 1 } : undefined} />
+        <Footage src="headgear" from={10.3} duration={s(2)} push={[1.02, 1.07]} crop={V ? { x: 960, y: 540, s: 1 } : undefined} />
         <Streak length={12} />
         <Kinetic duration={s(2)} align={V ? 'center' : 'right'} x={V ? 50 : 95} y={V ? 82 : 22} lines={[{ text: 'YOUR', size: 110 }, { text: 'SHADES.', size: 160, color: C.gold }]} />
       </At>
