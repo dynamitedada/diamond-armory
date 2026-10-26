@@ -1,0 +1,7 @@
+node_modules/
+footage/
+video/public/footage/
+video/public/audio/
+video/out/
+audio/music.wav
+audio/sfx/
