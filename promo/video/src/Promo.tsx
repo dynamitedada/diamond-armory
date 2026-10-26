@@ -73,7 +73,7 @@ export const Promo: React.FC = () => {
 
       {/* ── 22–30 s · bat swap, live */}
       <At a={22} b={30} name="batswap">
-        <Footage src="batswap" from={0.9} duration={s(8)} push={[1, 1.04]} crop={V ? { x: 1000, y: 560, s: 1 } : undefined} />
+        <Footage src="batswap" from={1.8} rate={1.25} duration={s(8)} push={[1, 1.04]} crop={V ? { x: 1000, y: 560, s: 1 } : undefined} />
         <Flash length={8} peak={0.5} />
         <Sequence from={s(0.3)}><Caption kicker="New bat this season?" text="EQUIP IT. SEE IT LIVE." highlight="SEE IT LIVE." duration={s(4.6)} pos={V ? 'bc' : 'br'} /></Sequence>
         <Sequence from={s(5.2)}><Caption kicker="Your lumber" text="YOUR SWING." highlight="SWING." duration={s(2.8)} pos={V ? 'bc' : 'bl'} color={C.magenta} /></Sequence>
@@ -81,7 +81,7 @@ export const Promo: React.FC = () => {
 
       {/* ── 30–32 s · jersey */}
       <At a={30} b={32} name="jersey">
-        <Footage src="jersey" from={2.6} duration={s(2)} push={[1.02, 1.08]} crop={V ? { x: 1150, y: 560, s: 1 } : undefined} />
+        <Footage src="jersey" from={3.6} duration={s(2)} push={[1.02, 1.08]} crop={V ? { x: 1150, y: 560, s: 1 } : undefined} />
         <Streak length={12} reverse color={C.cyan} />
         <Kinetic duration={s(2)} align={V ? 'center' : 'right'} x={V ? 50 : 95} y={V ? 82 : 22} lines={[{ text: 'YOUR', size: 110 }, { text: 'COLORS.', size: 160, color: C.cyan }]} />
       </At>
@@ -101,7 +101,7 @@ export const Promo: React.FC = () => {
 
       {/* ── 41–47 s · montage on the beat */}
       <At a={41} b={43} name="glove">
-        <Footage src="glove" from={2.4} duration={s(2)} push={[1.02, 1.07]} crop={V ? { x: 900, y: 560, s: 1 } : undefined} />
+        <Footage src="glove" from={6.2} duration={s(2)} push={[1.02, 1.07]} crop={V ? { x: 900, y: 560, s: 1 } : undefined} />
         <Kinetic duration={s(2)} align={V ? 'center' : 'left'} x={V ? 50 : 5} y={V ? 82 : 22} lines={[{ text: 'YOUR', size: 110 }, { text: 'LEATHER.', size: 160, color: C.legendary }]} />
       </At>
       <At a={43} b={45} name="headgear">

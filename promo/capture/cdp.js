@@ -6,7 +6,7 @@ const path = require('path');
 const SHELL = '/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell';
 
 async function launch({ width = 1920, height = 1080, dpr = 1, port = 9333 + Math.floor(Math.random() * 500) } = {}) {
-  const userDir = fs.mkdtempSync('/tmp/claude-0/-home-user/39f70e04-e662-5239-9051-2ac83303db4e/scratchpad/chr-');
+  const userDir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'da-chrome-'));
   const proc = spawn(SHELL, [
     `--remote-debugging-port=${port}`, `--user-data-dir=${userDir}`,
     '--deterministic-mode', '--enable-begin-frame-control', '--run-all-compositor-stages-before-draw',
