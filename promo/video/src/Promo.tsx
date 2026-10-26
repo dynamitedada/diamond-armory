@@ -83,7 +83,7 @@ export const Promo: React.FC = () => {
       <At a={30} b={32} name="jersey">
         <Footage src="jersey" from={3.6} duration={s(2)} push={[1.02, 1.08]} crop={V ? { x: 1150, y: 560, s: 1 } : undefined} />
         <Streak length={12} reverse color={C.cyan} />
-        <Kinetic duration={s(2)} align={V ? 'center' : 'right'} x={V ? 50 : 95} y={V ? 82 : 22} lines={[{ text: 'YOUR', size: 110 }, { text: 'COLORS.', size: 160, color: C.cyan }]} />
+        <Caption kicker="Your jersey" text="YOUR COLORS." highlight="COLORS." duration={s(2)} pos={V ? 'bc' : 'br'} color={C.cyan} size={120} />
       </At>
 
       {/* ── 32–34 s · breakdown */}
@@ -99,7 +99,7 @@ export const Promo: React.FC = () => {
         <Sequence from={s(0.2)} durationInFrames={s(2.5)}><Kinetic duration={s(2.5)} y={V ? 15 : 84} lines={[{ text: '…TO THE SHOW.', size: V ? 130 : 150, gradient: true }]} /></Sequence>
         <Sequence from={s(2.8)}>
           <AbsoluteFill style={{ justifyContent: 'flex-end', alignItems: 'center', paddingBottom: (V ? 280 : 70) * (width / 1920) }}>
-            <OvrCallout from={61} to={85} start={0} end={s(3.6)} />
+            <OvrCallout from={70} to={85} base={61} start={0} end={s(3.5)} />
           </AbsoluteFill>
         </Sequence>
       </At>
@@ -107,12 +107,12 @@ export const Promo: React.FC = () => {
       {/* ── 41–47 s · montage on the beat */}
       <At a={41} b={43} name="glove">
         <Footage src="glove" from={6.2} duration={s(2)} push={[1.02, 1.07]} crop={V ? { x: 900, y: 560, s: 1 } : undefined} />
-        <Kinetic duration={s(2)} align={V ? 'center' : 'left'} x={V ? 50 : 5} y={V ? 82 : 22} lines={[{ text: 'YOUR', size: 110 }, { text: 'LEATHER.', size: 160, color: C.legendary }]} />
+        <Caption kicker="Your glove" text="YOUR LEATHER." highlight="LEATHER." duration={s(2)} pos={V ? 'bc' : 'br'} color={C.legendary} size={120} />
       </At>
       <At a={43} b={45} name="headgear">
         <Footage src="headgear" from={10.3} duration={s(2)} push={[1.02, 1.07]} crop={V ? { x: 960, y: 540, s: 1 } : undefined} />
         <Streak length={12} />
-        <Kinetic duration={s(2)} align={V ? 'center' : 'right'} x={V ? 50 : 95} y={V ? 82 : 22} lines={[{ text: 'YOUR', size: 110 }, { text: 'SHADES.', size: 160, color: C.gold }]} />
+        <Caption kicker="Your shades" text="YOUR STYLE." highlight="STYLE." duration={s(2)} pos={V ? 'bc' : 'bl'} color={C.gold} size={120} />
       </At>
       <At a={45} b={49} name="anims">
         <Footage src="anims" from={4.4} duration={s(4)} push={[1.0, 1.05]} crop={V ? { x: 960, y: 540, s: 1 } : undefined} />

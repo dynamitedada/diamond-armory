@@ -22,7 +22,9 @@ export const Caption: React.FC<{
   const fs = size * k * (vertical ? 1.1 : 1);
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
-      <div style={{ ...style, opacity: 1 - outP, filter: `blur(${outP * 8}px)` }}>
+      <div style={{ ...style, opacity: 1 - outP, filter: `blur(${outP * 8}px)`, padding: `${22 * k}px ${28 * k}px ${18 * k}px`, borderRadius: 22 * k,
+        background: `linear-gradient(135deg, rgba(5,6,15,${0.78 * inP}), rgba(11,13,31,${0.62 * inP}))`, backdropFilter: `blur(${12 * inP}px)`,
+        boxShadow: `0 20px 60px rgba(0,0,0,${0.45 * inP}), inset 0 0 0 1px rgba(255,255,255,${0.08 * inP})` }}>
         {kicker && (
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 10 * k, padding: `${8 * k}px ${16 * k}px`, borderRadius: 999,
@@ -119,11 +121,11 @@ export const Logo: React.FC<{ scale?: number; delay?: number }> = ({ scale = 1, 
 };
 
 /** Big animated OVR counter callout, styled like the header badge in the app. */
-export const OvrCallout: React.FC<{ from: number; to: number; start: number; end: number; label?: string }> = ({ from, to, start, end, label = 'OVERALL' }) => {
+export const OvrCallout: React.FC<{ from: number; to: number; start: number; end: number; label?: string; base?: number }> = ({ from, to, start, end, label = 'OVERALL', base }) => {
   const f = useCurrentFrame();
   const { fps, width } = useVideoConfig();
   const k = width / 1920;
-  const v = Math.round(interpolate(f, [start, end], [from, to], { ...clamp, easing: Easing.out(Easing.cubic) }));
+  const v = Math.round(interpolate(f, [start, end], [from, to], clamp));
   const pop = spring({ frame: f - end, fps, config: { damping: 9, stiffness: 200 } });
   const inP = spring({ frame: f, fps, config: { damping: 16 } });
   return (
@@ -133,7 +135,7 @@ export const OvrCallout: React.FC<{ from: number; to: number; start: number; end
       <div style={{ fontFamily: DISPLAY, fontSize: 150 * k, lineHeight: 0.85, backgroundImage: `linear-gradient(180deg, #fff6b0, ${C.gold} 60%, #c99a00)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', fontVariantNumeric: 'tabular-nums', minWidth: 160 * k, textAlign: 'center' }}>{v}</div>
       <div style={{ fontFamily: DISPLAY, fontSize: 44 * k, color: C.white, letterSpacing: '0.06em', lineHeight: 1 }}>
         {label}
-        <div style={{ fontFamily: BODY, fontWeight: 700, fontSize: 18 * k, color: '#39ff88', letterSpacing: '0.1em', marginTop: 6 * k, opacity: f > start ? 1 : 0 }}>▲ +{Math.max(0, v - from)}</div>
+        <div style={{ fontFamily: BODY, fontWeight: 700, fontSize: 18 * k, color: '#39ff88', letterSpacing: '0.1em', marginTop: 6 * k, opacity: 1 }}>▲ +{Math.max(0, v - (base ?? from))} {base !== undefined ? 'FROM SANDLOT' : ''}</div>
       </div>
     </div>
   );
