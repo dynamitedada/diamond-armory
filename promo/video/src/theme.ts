@@ -1,8 +1,11 @@
-import { loadFont as loadBebas } from '@remotion/google-fonts/BebasNeue';
-import { loadFont as loadInter } from '@remotion/google-fonts/Inter';
+import { loadFont } from '@remotion/fonts';
+import { staticFile } from 'remotion';
 
-export const { fontFamily: DISPLAY } = loadBebas();
-export const { fontFamily: BODY } = loadInter('normal', { weights: ['400', '600', '700', '800'], subsets: ['latin'] });
+// Fonts are bundled from @fontsource (copied to public/fonts by scripts/sync-assets.sh) so renders work offline.
+export const DISPLAY = 'Bebas Neue';
+export const BODY = 'Inter';
+loadFont({ family: DISPLAY, url: staticFile('fonts/bebas-neue-latin-400-normal.woff2'), weight: '400' });
+for (const w of ['400', '600', '700', '800']) loadFont({ family: BODY, url: staticFile(`fonts/inter-latin-${w}-normal.woff2`), weight: w });
 
 // Lifted from the armory itself (src/App.css, src/ui/theme.ts) so the promo matches the product.
 export const C = {

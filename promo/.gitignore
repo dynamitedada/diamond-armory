@@ -1,7 +1,8 @@
-node_modules/
-footage/
-video/public/footage/
-video/public/audio/
-video/out/
 audio/music.wav
 audio/sfx/
+footage/
+node_modules/
+video/out/
+video/public/audio/
+video/public/fonts/
+video/public/footage/

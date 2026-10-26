@@ -10,7 +10,7 @@ const SHOTS = {
   } }),
 
   // Hero 3D close-up: slow orbit around the player.
-  hero: () => shot('hero', { canvasDpr: 2.4, cursor: false, view: { cx: 960, cy: 512, s: 2.35 }, script: async (s) => {
+  hero: () => shot('hero', { canvasDpr: 2.6, cursor: false, view: { cx: 960, cy: 520, s: 2.9 }, script: async (s) => {
     s.onFrame(() => s.cam3d(s.kf([[0, -0.9], [8, 0.9]], s.t), s.kf([[0, 7.0], [8, 6.3]], s.t)));
     await s.sec(8);
   } }),

@@ -111,8 +111,8 @@ export const Logo: React.FC<{ scale?: number; delay?: number }> = ({ scale = 1, 
       </svg>
       <div style={{ position: 'relative', fontFamily: DISPLAY, fontSize: 190 * k, lineHeight: 0.9, letterSpacing: '0.04em', color: C.white,
         transform: `translateY(${(1 - sp2) * 60 * k}px)`, opacity: sp2, textShadow: `0 8px 40px rgba(0,0,0,.6)`, whiteSpace: 'nowrap' }}>
-        DIAMOND <span style={{ backgroundImage: `linear-gradient(100deg, ${C.gold}, #ffe680 40%, ${C.magenta})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>ARMORY</span>
-        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(105deg, transparent ${shine - 12}%, rgba(255,255,255,.55) ${shine}%, transparent ${shine + 12}%)`, mixBlendMode: 'overlay' }} />
+        DIAMOND <span style={{ backgroundImage: `linear-gradient(100deg, ${C.gold}, #ffe680 40%, ${C.magenta})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', textShadow: 'none', filter: 'drop-shadow(0 8px 30px rgba(0,0,0,.5))' }}>ARMORY</span>
+        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(105deg, rgba(255,255,255,0) ${shine - 12}%, rgba(255,255,255,.55) ${shine}%, rgba(255,255,255,0) ${shine + 12}%)`, mixBlendMode: 'overlay' }} />
       </div>
     </div>
   );

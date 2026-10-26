@@ -8,8 +8,10 @@
     "render:vertical": "remotion render src/index.ts PromoVertical out/diamond-armory-promo-vertical.mp4"
   },
   "dependencies": {
+    "@fontsource/bebas-neue": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
     "@remotion/cli": "^4.0.539",
-    "@remotion/google-fonts": "^4.0.539",
+    "@remotion/fonts": "^4.0.539",
     "@remotion/media": "^4.0.539",
     "@remotion/transitions": "^4.0.539",
     "react": "^19.3.1",
