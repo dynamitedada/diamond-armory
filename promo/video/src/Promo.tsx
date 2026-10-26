@@ -97,6 +97,11 @@ export const Promo: React.FC = () => {
         <Footage src="transform" from={0.4} duration={s(7)} push={[1.0, 1.05]} crop={V ? { x: 960, y: 520, s: 1 } : undefined} />
         <Flash length={10} color={C.gold} peak={0.6} />
         <Sequence from={s(0.2)} durationInFrames={s(2.5)}><Kinetic duration={s(2.5)} y={V ? 15 : 84} lines={[{ text: '…TO THE SHOW.', size: V ? 130 : 150, gradient: true }]} /></Sequence>
+        <Sequence from={s(2.8)}>
+          <AbsoluteFill style={{ justifyContent: 'flex-end', alignItems: 'center', paddingBottom: (V ? 280 : 70) * (width / 1920) }}>
+            <OvrCallout from={61} to={85} start={0} end={s(3.6)} />
+          </AbsoluteFill>
+        </Sequence>
       </At>
 
       {/* ── 41–47 s · montage on the beat */}
