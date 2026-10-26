@@ -32,7 +32,7 @@ export const Promo: React.FC = () => {
 
       {/* ── 4–6.5 s · logo slam over the page booting */}
       <At a={4} b={6.5} name="logo">
-        <Footage src="boot" from={0.2} duration={s(2.5)} push={[1.12, 1.18]} dim={0.55} />
+        <Footage src="boot" from={3.0} duration={s(2.5)} push={[1.12, 1.18]} dim={0.55} />
         <AbsoluteFill style={{ backdropFilter: 'blur(14px)' }} />
         <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}><Logo scale={V ? 0.8 : 1} /></AbsoluteFill>
         <Sequence from={s(1.0)}>
@@ -48,7 +48,7 @@ export const Promo: React.FC = () => {
       {/* ── 6.5–10 s · the real page loads in */}
       <At a={6.5} b={10} name="boot">
         <DiamondWipe length={10}>
-          <Footage src="boot" from={1.6} duration={s(3.5)} push={[1.0, 1.06]} crop={V ? { x: 960, y: 520, s: 1 } : undefined} />
+          <Footage src="boot" from={0.0} duration={s(3.5)} push={[1.0, 1.06]} crop={V ? { x: 960, y: 520, s: 1 } : undefined} />
         </DiamondWipe>
         <Sequence from={s(0.5)}><Caption kicker="Diamond Armory" text="MEET YOUR ARMORY." highlight="ARMORY." duration={s(3.0)} pos={V ? 'bc' : 'bl'} /></Sequence>
       </At>
