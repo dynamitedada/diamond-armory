@@ -100,6 +100,12 @@ export function Player({ onReady }: PlayerProps) {
     applyOutfit(rig.prepared.uniforms, rig.outfit, equipped, player);
   }, [rig, equipped, player]);
 
+  // helmet decals carry a sample number in the catalog; show this player's number instead
+  const helmetVisual = useMemo(() => {
+    const v = equipped.helmet?.visual;
+    return v?.text ? { ...v, text: String(player.number) } : v;
+  }, [equipped.helmet, player.number]);
+
   const batting = BATTING_ANIMS.has(shown);
   const showHelmet = !!equipped.helmet && (batting || !equipped.cap);
   const showCap = !!equipped.cap && !showHelmet;
@@ -175,7 +181,7 @@ export function Player({ onReady }: PlayerProps) {
       )}
       {showHelmet && (
         <Socket bone={B[SOCKETS.helmet.bone]} name="helmet">
-          <Helmet visual={vis(equipped.helmet)!} highlight={hl('helmet')} />
+          <Helmet visual={helmetVisual!} highlight={hl('helmet')} />
         </Socket>
       )}
       {equipped.eyewear && (
