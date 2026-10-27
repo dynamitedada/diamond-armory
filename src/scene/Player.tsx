@@ -11,7 +11,7 @@ import { AnimationController, BATTING_ANIMS } from './animations';
 import { SOCKETS, type SocketName } from './sockets';
 import { Bat, Cap, Chain, Cleats, ElbowGuard, Eyewear, Glove, Helmet, Wristband } from './gear';
 
-export const MODEL_URL = '/models/Knight.glb';
+export const MODEL_URL = `${import.meta.env.BASE_URL}models/Knight.glb`;
 useGLTF.preload(MODEL_URL);
 
 /** Animations where the bat is put away (hands are busy). */
