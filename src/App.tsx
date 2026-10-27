@@ -1,49 +1,37 @@
-import { lazy, Suspense, useEffect } from 'react';
-import { Header } from './ui/Header';
-import { Tabs } from './ui/Tabs';
-import { EquipmentSlot } from './ui/EquipmentSlot';
-import { StatsPanel } from './ui/StatsPanel';
-import { AnimationBar } from './ui/AnimationBar';
-import { BOTTOM_SLOTS, LEFT_SLOTS, RIGHT_SLOTS, useUi } from './ui/theme';
+import { useEffect } from 'react';
+import { useRoute } from './router';
+import { TopNav } from './ui/TopNav';
+import { Feedback } from './ui/Feedback';
+import { Toasts } from './ui/Toast';
+import { useUi } from './ui/theme';
+import { ViewerPortal } from './viewer/ViewerHost';
+import { HomePage } from './pages/HomePage';
+import { BuilderPage } from './pages/BuilderPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { NotFound } from './pages/NotFound';
 import './App.css';
-
-const ModelViewer = lazy(() => import('./scene/ModelViewer').then((m) => ({ default: m.ModelViewer })));
+import './site.css';
 
 export default function App() {
-  const setReady = useUi((s) => s.setReady);
+  const route = useRoute();
+  const routeKey = route.name === 'profile' ? `p:${route.slug}` : route.name;
+
+  // new page: close any open picker and start at the top
   useEffect(() => {
-    // Short skeleton phase so the stagger-in reads as intentional, then reveal.
-    const t = setTimeout(setReady, 450);
-    return () => clearTimeout(t);
-  }, [setReady]);
+    useUi.getState().openPicker(undefined);
+    window.scrollTo(0, 0);
+  }, [routeKey]);
 
   return (
     <>
-    <Header />
-    <div className="app">
-      <Tabs />
-      <main className="stage">
-        <div className="col col-left">
-          {LEFT_SLOTS.map((s, i) => <EquipmentSlot key={s} slot={s} side="left" index={i} />)}
-        </div>
-        <div className="center">
-          <div className="viewer">
-            <div className="viewer-skeleton" aria-hidden />
-            <div className="viewer-canvas"><Suspense fallback={null}><ModelViewer /></Suspense></div>
-            <div className="viewer-vignette" aria-hidden />
-            <AnimationBar />
-          </div>
-          <div className="weapons">
-            {BOTTOM_SLOTS.map((s, i) => <EquipmentSlot key={s} slot={s} side="bottom" index={i + 8} />)}
-          </div>
-        </div>
-        <div className="col col-right">
-          {RIGHT_SLOTS.map((s, i) => <EquipmentSlot key={s} slot={s} side="right" index={i} />)}
-        </div>
-      </main>
-      <StatsPanel />
-      <footer className="foot">Diamond Armory · hover a slot for details · click to swap gear · hold ⇧ to compare</footer>
-    </div>
+      <TopNav route={route} />
+      {route.name === 'home' && <HomePage />}
+      {route.name === 'new' && <BuilderPage />}
+      {route.name === 'profile' && <ProfilePage key={route.slug} slug={route.slug} />}
+      {route.name === 'notfound' && <NotFound kind="page" />}
+      <ViewerPortal />
+      <Feedback profileSlug={route.name === 'profile' ? route.slug : undefined} />
+      <Toasts />
     </>
   );
 }

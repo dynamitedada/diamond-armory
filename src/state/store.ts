@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { AnimationName, Item, PlayerProfile, Slot } from '../data/types';
 import { CATALOG, DEFAULT_LOADOUT, PLAYER } from '../data/items';
+import { resolveLoadout, type Loadout } from '../lib/profile';
 
 interface ArmoryState {
   player: PlayerProfile;
@@ -14,6 +15,10 @@ interface ArmoryState {
   hovered?: Item;
   equip: (item: Item) => void;
   unequip: (slot: Slot) => void;
+  /** Replace the profile shown in the header and on the 3D model. */
+  setPlayer: (player: PlayerProfile) => void;
+  /** Replace the whole loadout from a stored slot→item-id map (unknown ids are ignored). */
+  setLoadout: (loadout: Loadout) => void;
   setAnimation: (a: AnimationName) => void;
   setAutoRotate: (v: boolean) => void;
   setHovered: (i?: Item) => void;
@@ -35,6 +40,8 @@ export const useArmory = create<ArmoryState>((set) => ({
   hovered: undefined,
   equip: (item) => set((s) => ({ equipped: { ...s.equipped, [item.slot]: item } })),
   unequip: (slot) => set((s) => { const e = { ...s.equipped }; delete e[slot]; return { equipped: e }; }),
+  setPlayer: (player) => set({ player }),
+  setLoadout: (loadout) => set({ equipped: resolveLoadout(loadout), hovered: undefined }),
   setAnimation: (animation) => set((s) => ({ animation, animationNonce: s.animationNonce + 1 })),
   setAutoRotate: (autoRotate) => set({ autoRotate }),
   setHovered: (hovered) => set({ hovered }),

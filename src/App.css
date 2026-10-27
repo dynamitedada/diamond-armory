@@ -112,51 +112,6 @@
 .ovr-value { margin-top: 6px; font-size: 14px; font-weight: 700; }
 .ovr-sub { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
 
-/* ───────────────────────────── Tabs */
-.tabs {
-  display: flex;
-  gap: 4px;
-  margin: 8px 0 16px;
-  border-bottom: 1px solid var(--line);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tab {
-  position: relative;
-  background: none;
-  border: 0;
-  padding: 10px 14px 12px;
-  font-family: var(--display);
-  font-size: 20px;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 150ms var(--ease);
-}
-.tab:hover { color: #fff; }
-.tab[aria-disabled='true'] { cursor: default; }
-.tab.on { color: #fff; }
-.tab.on::after {
-  content: '';
-  position: absolute; left: 10px; right: 10px; bottom: -1px;
-  height: 3px; border-radius: 3px 3px 0 0;
-  background: linear-gradient(90deg, var(--neon), var(--cyan));
-  box-shadow: 0 0 12px var(--neon);
-}
-.tab-soon {
-  font-family: var(--body);
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-left: 6px;
-  padding: 1px 5px;
-  border-radius: 3px;
-  border: 1px solid var(--line-2);
-  color: var(--dim);
-  vertical-align: 4px;
-}
-
 /* ───────────────────────────── Stage */
 .stage {
   display: grid;
@@ -220,7 +175,10 @@
   backdrop-filter: blur(12px) saturate(140%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
 }
-.animbar-chips { display: flex; justify-content: center; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.animbar-chips { display: flex; justify-content: flex-start; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+/* centered when they fit, scroll from the first chip when they don't */
+.animbar-chips > :first-child { margin-left: auto; }
+.animbar-chips > :last-child { margin-right: auto; }
 .animbar-chips::-webkit-scrollbar { display: none; }
 .chip {
   flex: none;
@@ -569,8 +527,6 @@
 }
 
 @media (max-width: 900px) {
-  .tab-soon { display: none; }
-  .tab { font-size: 18px; padding: 10px 10px 12px; }
   .animbar-chips { -webkit-mask: linear-gradient(90deg, #000 85%, transparent); mask: linear-gradient(90deg, #000 85%, transparent); padding-right: 24px; }
 }
 

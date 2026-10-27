@@ -55,6 +55,9 @@ export function SlotPicker({ slot, anchorEl, placement }: Props) {
     committed.current = true;
     apply(rows[i]);
     close();
+    // "Pick your bat. Watch him swing."
+    if (slot === 'bat' && rows[i]) useArmory.getState().setAnimation('swing');
+    useUi.getState().bumpCommit();
   };
 
   // Revert preview on close-without-choosing.
@@ -80,10 +83,12 @@ export function SlotPicker({ slot, anchorEl, placement }: Props) {
       if (ref.current?.contains(t) || anchorEl.contains(t)) return;
       close();
     };
-    const onScroll = () => close();
+    // close on real layout changes only (mobile browsers fire resize when their toolbars slide)
+    let lastW = window.innerWidth;
+    const onResize = () => { if (window.innerWidth !== lastW) { lastW = window.innerWidth; close(); } };
     document.addEventListener('mousedown', onDown);
-    window.addEventListener('resize', onScroll);
-    return () => { document.removeEventListener('mousedown', onDown); window.removeEventListener('resize', onScroll); };
+    window.addEventListener('resize', onResize);
+    return () => { document.removeEventListener('mousedown', onDown); window.removeEventListener('resize', onResize); };
   }, [anchorEl]);
 
   // Keyboard handling lives on window so it works no matter where focus is.
@@ -116,6 +121,7 @@ export function SlotPicker({ slot, anchorEl, placement }: Props) {
         <div className="picker-head">
           <span>{SLOT_LABELS[slot]}</span>
           <span className="picker-hint">↑↓ preview · ⏎ equip · ⇧ compare</span>
+          <button type="button" className="picker-close" onClick={() => { close(); anchorEl.focus({ preventScroll: true }); }} aria-label="Close">Done</button>
         </div>
         <ul
           className="picker-list"

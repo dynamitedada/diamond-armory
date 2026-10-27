@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type { Item, Rarity, Slot, StatKey } from '../data/types';
 import { create } from 'zustand';
 
@@ -37,8 +37,11 @@ export const BASE_STATS: Record<StatKey, number> = {
   power: 58, contact: 66, speed: 74, arm: 63, fielding: 69, eye: 55, clutch: 50, swag: 40,
 };
 
+/** Name color per position (WoW class-color energy, tuned for dark backgrounds). */
 export const POSITION_COLOR: Record<string, string> = {
-  Shortstop: '#ff6ad5', Pitcher: '#69ccf0', Catcher: '#c79c6e', 'Center Field': '#abd473',
+  Pitcher: '#69ccf0', Catcher: '#c79c6e', 'First Base': '#ff8a3d', 'Second Base': '#fff468',
+  'Third Base': '#ff5a6e', Shortstop: '#ff6ad5', 'Left Field': '#33ff9f', 'Center Field': '#abd473',
+  'Right Field': '#9a9bff', 'Designated Hitter': '#c97bff', Utility: '#f2f2f2',
 };
 
 export const LEFT_SLOTS: Slot[] = ['helmet', 'cap', 'eyewear', 'chain', 'jersey', 'undershirt', 'wristband', 'elbowGuard'];
@@ -55,19 +58,44 @@ export function sumStats(items: (Item | undefined)[]): Record<StatKey, number> {
   return out;
 }
 
-/** UI-only state (which picker is open, boot "ready" flag). */
+/** UI-only state (which picker is open, "ready" flag that drives skeletons → stagger-in). */
 interface UiState {
   pickerSlot?: Slot;
   openPicker: (s?: Slot) => void;
   ready: boolean;
-  setReady: () => void;
+  setReady: (v?: boolean) => void;
+  /** A sticky bottom action bar is showing (the feedback button moves up to clear it). */
+  bottomBar: boolean;
+  setBottomBar: (v: boolean) => void;
+  /** Bumped whenever gear is committed from a picker (phones scroll the model back into view). */
+  commitNonce: number;
+  bumpCommit: () => void;
 }
 export const useUi = create<UiState>((set) => ({
   pickerSlot: undefined,
   openPicker: (pickerSlot) => set({ pickerSlot }),
   ready: false,
-  setReady: () => set({ ready: true }),
+  setReady: (ready = true) => set({ ready }),
+  bottomBar: false,
+  setBottomBar: (bottomBar) => set({ bottomBar }),
+  commitNonce: 0,
+  bumpCommit: () => set((s) => ({ commitNonce: s.commitNonce + 1 })),
 }));
+
+/** Live media query match. */
+export function useMediaQuery(query: string): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      const m = window.matchMedia(query);
+      m.addEventListener('change', cb);
+      return () => m.removeEventListener('change', cb);
+    },
+    () => window.matchMedia(query).matches,
+  );
+}
+
+export const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** Animated number that eases toward `target`. */
 export function useCountUp(target: number, duration = 900, start = 0): number {
@@ -76,6 +104,11 @@ export function useCountUp(target: number, duration = 900, start = 0): number {
   const valueRef = useRef(start);
   useEffect(() => {
     from.current = valueRef.current;
+    if (prefersReducedMotion()) {
+      valueRef.current = target;
+      const raf = requestAnimationFrame(() => setValue(target));
+      return () => cancelAnimationFrame(raf);
+    }
     const t0 = performance.now();
     let raf = 0;
     const tick = (now: number) => {

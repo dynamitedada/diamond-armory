@@ -30,7 +30,8 @@ export function jerseyLabels(player: PlayerProfile, jersey?: Item) {
   const last = (parts[parts.length - 1] || player.name).toUpperCase();
   const teamWords = player.team.trim().split(/\s+/);
   const wordmark = teamWords[teamWords.length - 1] || player.team;
-  const number = jersey?.visual.text ?? String(player.number);
+  // the player's own number wins over the catalog jersey's sample number
+  const number = Number.isFinite(player.number) ? String(player.number) : jersey?.visual.text ?? '';
   return { last, wordmark, number };
 }
 

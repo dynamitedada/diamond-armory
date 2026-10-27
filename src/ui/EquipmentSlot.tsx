@@ -55,7 +55,7 @@ export function EquipmentSlot({ slot, side, index }: Props) {
             {item ? item.name : `Empty ${SLOT_LABELS[slot]}`}
           </span>
           <span className="slot-meta">
-            {item ? <><b>OVR {item.ovr}</b> · {kind}</> : <>{SLOT_LABELS[slot]} · click to equip</>}
+            {item ? <><b>OVR {item.ovr}</b> · {kind}</> : <>{SLOT_LABELS[slot]} · add gear</>}
           </span>
         </span>
       </button>
