@@ -7,3 +7,5 @@ export { Wristband, ElbowGuard, LIMB_RADIUS } from './Limb';
 export { Cleats, type CleatProps } from './Cleats';
 export { GearPreview, type GearPreviewProps } from './GearPreview';
 export { finishMaterialProps, makeMaterial, useHighlightPulse, type FinishProps, type GearProps, type Finish } from './util';
+
+export { SlidingMitt, LegGuard } from './Protection';

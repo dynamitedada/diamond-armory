@@ -22,8 +22,12 @@ function TooltipBody({ item, header }: { item: Item; header?: string }) {
     <div className="tt-body">
       {header && <div className="tt-header">{header}</div>}
       <div className="tt-name" style={{ color: RARITY_TEXT[item.rarity] }}>{item.name}</div>
-      <div className="tt-ovr">OVR {item.ovr}</div>
-      <div className="tt-sig">{item.setName ? `Signature: ${item.setName}` : item.rarity === 'common' || item.rarity === 'uncommon' ? 'Signature: Team-Issued' : 'Signature: Player Exclusive'}</div>
+      {item.product ? <>
+        <div className="tt-detail">{item.product.manufacturer} · {item.product.model}</div>
+        {Object.entries(item.product.specifications).map(([k, v]) => <div className="tt-detail" key={k}>{k}: {v}</div>)}
+        <p className="catalog-note">{item.product.representation === 'uniform-color' ? 'Uniform color preview' : 'Generic 3D preview'} · accurate product asset needed. Illustration, colors and geometry are not an exact branded replica.</p>
+      </> : <><div className="tt-ovr">OVR {item.ovr}</div><div className="tt-detail">Legacy fantasy cosmetic · game attributes</div></>}
+      {!item.product && <div className="tt-sig">{item.setName ? `Signature: ${item.setName}` : item.rarity === 'common' || item.rarity === 'uncommon' ? 'Signature: Team-Issued' : 'Signature: Player Exclusive'}</div>}
       <div className="tt-row"><span>{SLOT_LABELS[item.slot]}</span><span>{sameKind ? detail : kind}</span></div>
       {detail && !sameKind && <div className="tt-detail">{detail}</div>}
       <div className="tt-gap" />

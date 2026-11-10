@@ -538,3 +538,14 @@
   transition: color 150ms var(--ease), border-color 150ms var(--ease), box-shadow 150ms var(--ease);
 }
 .tool-btn:hover { color: #fff; border-color: rgba(74, 215, 255, 0.6); box-shadow: 0 0 10px rgba(74, 215, 255, 0.25); }
+
+/* Real equipment catalog: local, logo-free illustrations and inspectable references. */
+.catalog-controls, .catalog-reference { padding: 10px 14px; border-top: 1px solid #343d51; font-size: 12px; }
+.catalog-controls > input { width: 100%; box-sizing: border-box; padding: 9px; color: #edf2ff; background: #141b29; border: 1px solid #526079; border-radius: 5px; }
+.catalog-controls label { display: block; margin-top: 8px; }
+.catalog-note { color: #b4c2d8; font-size: 11px; line-height: 1.5; margin: 8px 0; }
+.catalog-reference { color: #bac8dc; line-height: 1.5; max-height: 130px; overflow: auto; }
+.catalog-reference a { color: #7de3ff; }
+.picker { max-height: min(90dvh, 740px); display: flex; flex-direction: column; }
+.picker-list { min-height: 0; overflow-y: auto; flex: 1; }
+.slot-icon img { object-fit: contain; }

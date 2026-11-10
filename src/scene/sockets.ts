@@ -34,6 +34,8 @@ export const SOCKETS = {
   chain: { bone: 'chest', position: [0, 0.28, 0.0], rotation: [0, 0, 0], scale: 3.2 },
   wristband: { bone: 'lowerarml', position: [0, 0.21, 0], rotation: [0, 0, 0], scale: [3.1, 1.5, 3.1] },
   elbowGuard: { bone: 'lowerarml', position: [0, 0.02, 0], rotation: [0, 0, 0], scale: 2.9 },
+  slidingMitt: { bone: 'hips', position: [-0.25, 0.02, -0.24], rotation: [0, 0, 0], scale: 2.0 },
+  legGuard: { bone: 'lowerlegl', position: [0, 0.15, 0.04], rotation: [0, 0, 0], scale: 2.4 },
   cleatL: { bone: 'footl', position: [0, 0, 0], rotation: [0, 0, 0], scale: 1.65, charAligned: true },
   cleatR: { bone: 'footr', position: [0, 0, 0], rotation: [0, 0, 0], scale: 1.65, charAligned: true },
 } satisfies Record<string, SocketDef>;
@@ -41,4 +43,4 @@ export const SOCKETS = {
 export type SocketName = keyof typeof SOCKETS;
 
 /** Gear slots rendered as attached components (the rest are soft goods on the uniform material). */
-export const GEAR_SLOTS: Slot[] = ['bat', 'glove', 'cap', 'helmet', 'eyewear', 'chain', 'wristband', 'elbowGuard', 'cleats'];
+export const GEAR_SLOTS: Slot[] = ['bat', 'glove', 'cap', 'helmet', 'eyewear', 'chain', 'wristband', 'elbowGuard', 'slidingMitt', 'legGuard', 'cleats'];

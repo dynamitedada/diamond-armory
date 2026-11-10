@@ -13,8 +13,8 @@ export function SlotIcon({ item, slot, size = 52 }: { item?: Item; slot: Slot; s
       className={`slot-icon ${item ? `r-${rarity}` : 'empty'}`}
       style={{ '--rc': item ? RARITY_COLOR[item.rarity] : '#3a3f52', width: size, height: size } as CSSProperties}
     >
-      <span className="slot-glyph" style={{ fontSize: size * 0.5 }}>{item ? item.icon : SLOT_GLYPHS[slot]}</span>
-      {item && <span className="slot-ovr">{item.ovr}</span>}
+      {item?.product ? <img width={size * 0.8} height={size * 0.8} src={`${import.meta.env.BASE_URL}${item.product.image.src}`} alt="" title="Generic category illustration" /> : <span className="slot-glyph" style={{ fontSize: size * 0.5 }}>{item ? item.icon : SLOT_GLYPHS[slot]}</span>}
+      {item && !item.product && <span className="slot-ovr">{item.ovr}</span>}
     </div>
   );
 }
@@ -55,7 +55,7 @@ export function EquipmentSlot({ slot, side, index }: Props) {
             {item ? item.name : `Empty ${SLOT_LABELS[slot]}`}
           </span>
           <span className="slot-meta">
-            {item ? <><b>OVR {item.ovr}</b> · {kind}</> : <>{SLOT_LABELS[slot]} · add gear</>}
+            {item ? <>{item.product ? "Generic 3D preview" : `Legacy cosmetic · OVR ${item.ovr}`} · {kind}</> : <>{SLOT_LABELS[slot]} · add gear</>}
           </span>
         </span>
       </button>

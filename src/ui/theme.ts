@@ -45,7 +45,7 @@ export const POSITION_COLOR: Record<string, string> = {
 };
 
 export const LEFT_SLOTS: Slot[] = ['helmet', 'cap', 'eyewear', 'chain', 'jersey', 'undershirt', 'wristband', 'elbowGuard'];
-export const RIGHT_SLOTS: Slot[] = ['battingGloves', 'belt', 'pants', 'socks', 'cleats', 'walkupSong'];
+export const RIGHT_SLOTS: Slot[] = ['battingGloves', 'belt', 'pants', 'socks', 'cleats', 'slidingMitt', 'legGuard', 'walkupSong'];
 export const BOTTOM_SLOTS: Slot[] = ['bat', 'glove'];
 
 export type Side = 'left' | 'right' | 'bottom';
