@@ -3,7 +3,7 @@
 export type Slot =
   | 'helmet' | 'cap' | 'eyewear' | 'chain' | 'jersey' | 'undershirt'
   | 'battingGloves' | 'wristband' | 'elbowGuard' | 'belt' | 'pants' | 'socks' | 'cleats'
-  | 'bat' | 'glove' | 'walkupSong';
+  | 'bat' | 'glove' | 'walkupSong' | 'slidingMitt' | 'legGuard';
 
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
@@ -23,6 +23,19 @@ export interface ItemVisual {
 }
 
 export interface Item {
+  /** Manufacturer data is separate from cosmetic game attributes. */
+  product?: {
+    manufacturer: string;
+    model: string;
+    category: Slot;
+    specifications: Record<string, string>;
+    referenceUrl: string;
+    verifiedOn: string;
+    image: { src: string; kind: 'original-category-illustration'; license: 'CC0-1.0' };
+    representation: 'generic-3d' | 'uniform-color';
+    accurateAsset: 'needed';
+  };
+  legacy?: boolean;
   id: string;
   slot: Slot;
   name: string;

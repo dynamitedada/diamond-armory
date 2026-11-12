@@ -9,7 +9,7 @@ import { prepareCharacter, ROLE_COUNT } from './character';
 import { applyOutfit, createOutfitState, SLOT_ROLES } from './outfit';
 import { AnimationController, BATTING_ANIMS } from './animations';
 import { SOCKETS, type SocketName } from './sockets';
-import { Bat, Cap, Chain, Cleats, ElbowGuard, Eyewear, Glove, Helmet, Wristband } from './gear';
+import { Bat, Cap, Chain, Cleats, ElbowGuard, SlidingMitt, LegGuard, Eyewear, Glove, Helmet, Wristband } from './gear';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/Knight.glb`;
 useGLTF.preload(MODEL_URL);
@@ -224,6 +224,16 @@ export function Player({ onReady }: PlayerProps) {
       {equipped.elbowGuard && (
         <Socket bone={B[SOCKETS.elbowGuard.bone]} name="elbowGuard" slot="elbowGuard">
           <ElbowGuard visual={vis(equipped.elbowGuard)!} highlight={hl('elbowGuard')} />
+        </Socket>
+      )}
+      {equipped.slidingMitt && (
+        <Socket bone={B[SOCKETS.slidingMitt.bone]} name="slidingMitt">
+          <SlidingMitt visual={equipped.slidingMitt.visual} highlight={hl('slidingMitt')} />
+        </Socket>
+      )}
+      {equipped.legGuard && (
+        <Socket bone={B[SOCKETS.legGuard.bone]} name="legGuard">
+          <LegGuard visual={equipped.legGuard.visual} highlight={hl('legGuard')} />
         </Socket>
       )}
       {equipped.cleats && (

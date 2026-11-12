@@ -1,4 +1,5 @@
 import type { Item, PlayerProfile, Slot } from './types';
+import { REAL_PRODUCTS } from './products';
 
 export const PLAYER: PlayerProfile = {
   name: "Manny 'Nitro' Gauz",
@@ -29,7 +30,7 @@ export const SET_BONUSES: Record<string, SetBonus[]> = {
 
 const NOS = 'Night Owl Signature';
 
-export const CATALOG: Item[] = [
+export const LEGACY_CATALOG: Item[] = [
   // ───────────────────────── HELMET
   { id: 'helm-batting-practice', slot: 'helmet', name: 'Batting Practice Lid', rarity: 'common', ovr: 61, type: 'Helmet · Single Flap',
     stats: { contact: 2, fielding: 1 }, flavor: 'Smells like the equipment bag from 2014.', price: 120, icon: '⛑️',
@@ -258,20 +259,22 @@ export const CATALOG: Item[] = [
     visual: { primary: '#ffb020', variant: 'salsa' } },
 ];
 
+// Keep every original ID and visual so stored loadouts retain their appearance.
+export const CATALOG: Item[] = [...REAL_PRODUCTS, ...LEGACY_CATALOG.map((item) => ({ ...item, legacy: true }))];
+
 export const DEFAULT_LOADOUT: string[] = [
-  'helm-night-owl', 'cap-backwards-bodega', 'eye-mirror-wrap', 'chain-cuban', 'jersey-midnight',
-  'under-neon-sleeve', 'bg-hyperlight', 'wb-neon', /* elbowGuard empty */ 'belt-gator', 'pants-midnight',
-  'socks-stirrups', 'cleats-night-owl', 'bat-nitro-neon', 'glove-infield', 'song-bk-drill',
+  ...['helmet', 'cap', 'eyewear', 'battingGloves', 'cleats', 'bat', 'glove'].map((slot) => REAL_PRODUCTS.find((p) => p.slot === slot)!.id),
+  'jersey-home', 'under-compression', 'belt-team', 'pants-classic', 'socks-crew',
 ];
 
 export const SLOT_LABELS: Record<Slot, string> = {
-  helmet: 'Helmet', cap: 'Cap', eyewear: 'Eyewear', chain: 'Chain', jersey: 'Jersey', undershirt: 'Undershirt',
+  slidingMitt: 'Sliding Mitt', legGuard: 'Leg Guard', helmet: 'Helmet', cap: 'Cap', eyewear: 'Eyewear', chain: 'Chain', jersey: 'Jersey', undershirt: 'Undershirt',
   battingGloves: 'Batting Gloves', wristband: 'Wristband', elbowGuard: 'Elbow Guard', belt: 'Belt', pants: 'Pants',
   socks: 'Socks', cleats: 'Cleats', bat: 'Bat', glove: 'Glove', walkupSong: 'Walk-up Song',
 };
 
 /** Silhouette glyphs shown in empty slots. */
 export const SLOT_GLYPHS: Record<Slot, string> = {
-  helmet: '⛑️', cap: '🧢', eyewear: '🕶️', chain: '📿', jersey: '👕', undershirt: '🎽', battingGloves: '🧤',
+  slidingMitt: '▱', legGuard: '▯', helmet: '⛑️', cap: '🧢', eyewear: '🕶️', chain: '📿', jersey: '👕', undershirt: '🎽', battingGloves: '🧤',
   wristband: '⭕', elbowGuard: '🛡️', belt: '➖', pants: '👖', socks: '🧦', cleats: '👟', bat: '🏏', glove: '🧤', walkupSong: '🎵',
 };
