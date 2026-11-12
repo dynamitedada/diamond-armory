@@ -25,6 +25,11 @@ interface ArmoryState {
   /** Bumped by resetView(); the 3D viewer eases the camera back to its default framing. */
   viewResetNonce: number;
   resetView: () => void;
+  /** Gear piece clicked on the 3D model; the page decides what to show (detail popup). */
+  inspectSlot?: Slot;
+  /** Bumped on every inspect() so clicking the same piece twice re-opens it. */
+  inspectNonce: number;
+  inspect: (slot?: Slot) => void;
 }
 
 export const optionsFor = (slot: Slot): Item[] => CATALOG.filter((i) => i.slot === slot);
@@ -47,4 +52,7 @@ export const useArmory = create<ArmoryState>((set) => ({
   setHovered: (hovered) => set({ hovered }),
   viewResetNonce: 0,
   resetView: () => set((s) => ({ viewResetNonce: s.viewResetNonce + 1 })),
+  inspectSlot: undefined,
+  inspectNonce: 0,
+  inspect: (inspectSlot) => set((s) => ({ inspectSlot, inspectNonce: s.inspectNonce + 1 })),
 }));

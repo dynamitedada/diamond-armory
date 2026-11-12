@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { createPortal, useFrame } from '@react-three/fiber';
+import { createPortal, useFrame, type ThreeEvent } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { useArmory } from '../state/store';
@@ -26,10 +26,32 @@ interface SocketProps {
   children: ReactNode;
   groupRef?: React.Ref<THREE.Group>;
   visible?: boolean;
+  /** Clicking this gear asks the page to inspect the slot (detail popup). */
+  slot?: Slot;
+}
+
+/** Pointer handlers that make an attached gear piece clickable (a click, not the end of a drag-to-spin). */
+function gearHandlers(slot: Slot) {
+  return {
+    onClick: (e: ThreeEvent<MouseEvent>) => {
+      if (e.delta > 6) return;
+      e.stopPropagation();
+      useArmory.getState().inspect(slot);
+    },
+    onPointerOver: (e: ThreeEvent<PointerEvent>) => {
+      e.stopPropagation();
+      document.body.style.cursor = 'pointer';
+      if (e.pointerType === 'mouse') useArmory.getState().setHovered(useArmory.getState().equipped[slot]);
+    },
+    onPointerOut: (e: ThreeEvent<PointerEvent>) => {
+      document.body.style.cursor = '';
+      if (e.pointerType === 'mouse' && useArmory.getState().hovered?.slot === slot) useArmory.getState().setHovered(undefined);
+    },
+  };
 }
 
 /** Portal a gear component into a bone with the socket's offset/scale. */
-function Socket({ bone, name, bindInv, children, groupRef, visible = true }: SocketProps) {
+function Socket({ bone, name, bindInv, children, groupRef, visible = true, slot }: SocketProps) {
   const def = SOCKETS[name];
   const { position, quaternion } = useMemo(() => {
     const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(...def.rotation));
@@ -42,7 +64,7 @@ function Socket({ bone, name, bindInv, children, groupRef, visible = true }: Soc
   }, [def, bindInv]);
   return createPortal(
     <group position={position} quaternion={quaternion} scale={def.scale} visible={visible}>
-      <group ref={groupRef}>{children}</group>
+      <group ref={groupRef} {...(slot ? gearHandlers(slot) : {})}>{children}</group>
     </group>,
     bone,
   );
@@ -160,56 +182,56 @@ export function Player({ onReady }: PlayerProps) {
     <group>
       <primitive object={rig.root} />
       {equipped.bat && (
-        <Socket bone={B[SOCKETS.bat.bone]} name="bat" groupRef={batRef} visible={!NO_BAT.has(shown)}>
+        <Socket bone={B[SOCKETS.bat.bone]} name="bat" slot="bat" groupRef={batRef} visible={!NO_BAT.has(shown)}>
           <Bat visual={vis(equipped.bat)!} highlight={hl('bat')} />
         </Socket>
       )}
       {equipped.glove &&
         (GLOVE_TUCKED.has(shown) ? (
-          <Socket bone={B[SOCKETS.gloveTucked.bone]} name="gloveTucked">
+          <Socket bone={B[SOCKETS.gloveTucked.bone]} name="gloveTucked" slot="glove">
             <Glove visual={vis(equipped.glove)!} highlight={hl('glove')} />
           </Socket>
         ) : (
-          <Socket bone={B[SOCKETS.glove.bone]} name="glove">
+          <Socket bone={B[SOCKETS.glove.bone]} name="glove" slot="glove">
             <Glove visual={vis(equipped.glove)!} highlight={hl('glove')} />
           </Socket>
         ))}
       {showCap && (
-        <Socket bone={B[SOCKETS.cap.bone]} name="cap">
+        <Socket bone={B[SOCKETS.cap.bone]} name="cap" slot="cap">
           <Cap visual={vis(equipped.cap)!} highlight={hl('cap')} />
         </Socket>
       )}
       {showHelmet && (
-        <Socket bone={B[SOCKETS.helmet.bone]} name="helmet">
+        <Socket bone={B[SOCKETS.helmet.bone]} name="helmet" slot="helmet">
           <Helmet visual={helmetVisual!} highlight={hl('helmet')} />
         </Socket>
       )}
       {equipped.eyewear && (
-        <Socket bone={B[SOCKETS.eyewear.bone]} name="eyewear">
+        <Socket bone={B[SOCKETS.eyewear.bone]} name="eyewear" slot="eyewear">
           <Eyewear visual={vis(equipped.eyewear)!} highlight={hl('eyewear')} />
         </Socket>
       )}
       {equipped.chain && (
-        <Socket bone={B[SOCKETS.chain.bone]} name="chain">
+        <Socket bone={B[SOCKETS.chain.bone]} name="chain" slot="chain">
           <Chain visual={vis(equipped.chain)!} highlight={hl('chain')} />
         </Socket>
       )}
       {equipped.wristband && (
-        <Socket bone={B[SOCKETS.wristband.bone]} name="wristband">
+        <Socket bone={B[SOCKETS.wristband.bone]} name="wristband" slot="wristband">
           <Wristband visual={vis(equipped.wristband)!} highlight={hl('wristband')} />
         </Socket>
       )}
       {equipped.elbowGuard && (
-        <Socket bone={B[SOCKETS.elbowGuard.bone]} name="elbowGuard">
+        <Socket bone={B[SOCKETS.elbowGuard.bone]} name="elbowGuard" slot="elbowGuard">
           <ElbowGuard visual={vis(equipped.elbowGuard)!} highlight={hl('elbowGuard')} />
         </Socket>
       )}
       {equipped.cleats && (
         <>
-          <Socket bone={B[SOCKETS.cleatL.bone]} name="cleatL" bindInv={rig.bindInv[SOCKETS.cleatL.bone]}>
+          <Socket bone={B[SOCKETS.cleatL.bone]} name="cleatL" slot="cleats" bindInv={rig.bindInv[SOCKETS.cleatL.bone]}>
             <Cleats visual={vis(equipped.cleats)!} highlight={hl('cleats')} side="l" />
           </Socket>
-          <Socket bone={B[SOCKETS.cleatR.bone]} name="cleatR" bindInv={rig.bindInv[SOCKETS.cleatR.bone]}>
+          <Socket bone={B[SOCKETS.cleatR.bone]} name="cleatR" slot="cleats" bindInv={rig.bindInv[SOCKETS.cleatR.bone]}>
             <Cleats visual={vis(equipped.cleats)!} highlight={hl('cleats')} side="r" />
           </Socket>
         </>

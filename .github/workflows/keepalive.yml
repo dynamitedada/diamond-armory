@@ -1,0 +1,22 @@
+name: Keep Supabase awake
+
+# Free Supabase projects pause after a week without traffic. A tiny read every 3 days keeps the site's data online.
+on:
+  schedule:
+    - cron: '17 9 */3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read one profile through the public API
+        run: |
+          set -a; . ./.env; set +a
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H "apikey: $VITE_SUPABASE_KEY" "$VITE_SUPABASE_URL/rest/v1/profiles?select=slug&limit=1")
+          echo "Supabase answered $code"
+          test "$code" = 200
