@@ -33,7 +33,7 @@ export const HAIR_COLORS: { hex: string; label: string }[] = [
   { hex: '#4ad7ff', label: 'Electric blue' },
 ];
 
-export const LIMITS = { name: 40, nickname: 24, team: 40 } as const;
+export const LIMITS = { name: 40, nickname: 24, team: 40, bio: 280 } as const;
 
 /** What the builder form edits (numbers are kept as text while typing). */
 export interface ProfileFields {
@@ -46,6 +46,8 @@ export interface ProfileFields {
   throws: 'L' | 'R';
   skin_tone: string;
   hair_color: string;
+  /** Short public bio (optional). */
+  bio: string;
 }
 
 export type FieldErrors = Partial<Record<keyof ProfileFields, string>>;
@@ -61,6 +63,7 @@ export function newFields(): ProfileFields {
     throws: 'R',
     skin_tone: SKIN_TONES[3],
     hair_color: HAIR_COLORS[1].hex,
+    bio: '',
   };
 }
 
@@ -75,10 +78,14 @@ export function recordToFields(r: ProfileRecord): ProfileFields {
     throws: r.throws,
     skin_tone: r.skin_tone,
     hair_color: r.hair_color,
+    bio: r.bio ?? '',
   };
 }
 
 const clean = (s: string) => s.trim().replace(/\s+/g, ' ');
+/** Bios keep single line breaks but lose runs of blank lines and stray spaces. */
+export const cleanBio = (s: string) =>
+  s.replace(/\r/g, '').split('\n').map((l) => l.trim().replace(/\s+/g, ' ')).join('\n').replace(/\n{3,}/g, '\n\n').trim();
 
 export function validateFields(f: ProfileFields): FieldErrors {
   const e: FieldErrors = {};
@@ -88,6 +95,7 @@ export function validateFields(f: ProfileFields): FieldErrors {
   if (clean(f.nickname).length > LIMITS.nickname) e.nickname = `Nicknames max out at ${LIMITS.nickname} characters.`;
   else if (f.nickname.includes("'")) e.nickname = 'Skip the quote marks, we add those.';
   if (clean(f.team).length > LIMITS.team) e.team = `Keep the team name to ${LIMITS.team} characters.`;
+  if (cleanBio(f.bio).length > LIMITS.bio) e.bio = `Keep your bio to ${LIMITS.bio} characters.`;
   const num = f.number.trim();
   if (!num) e.number = 'Pick a number from 0 to 99.';
   else if (!/^\d{1,2}$/.test(num)) e.number = 'Use a whole number from 0 to 99.';
@@ -106,6 +114,7 @@ export function fieldsToInput(f: ProfileFields, loadout: Loadout): ProfileInput 
     throws: f.throws,
     skin_tone: f.skin_tone,
     hair_color: f.hair_color,
+    bio: cleanBio(f.bio) || null,
     loadout,
   };
 }
@@ -116,6 +125,8 @@ export function fieldsToPlayer(f: ProfileFields): PlayerProfile {
   return toPlayerProfile({
     ...input,
     name: input.name || 'Rookie',
+    bio: input.bio ?? null,
+    owner_id: null,
     slug: '',
     created_at: '',
     updated_at: '',

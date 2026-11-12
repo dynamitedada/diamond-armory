@@ -7,6 +7,7 @@ import { StatsPanel } from '../ui/StatsPanel';
 import { AnimationBar } from '../ui/AnimationBar';
 import { BOTTOM_SLOTS, LEFT_SLOTS, RIGHT_SLOTS, prefersReducedMotion, useMediaQuery, useUi } from '../ui/theme';
 import { ViewerSlot } from '../viewer/ViewerHost';
+import { GearDetailHost } from '../ui/GearDetail';
 
 export const MOBILE_QUERY = '(max-width: 900px)';
 
@@ -24,9 +25,13 @@ interface Props {
   stickyViewer?: boolean;
   /** Sticky bottom action bar (save / try-on). */
   bottomBar?: ReactNode;
+  /** Extra sections under the stats (e.g. profile Highlights). */
+  after?: ReactNode;
+  /** The viewer may change this player's gear ("Swap gear" vs "Try other gear" in the detail popup). */
+  canEdit?: boolean;
 }
 
-export function ArmoryView({ loading = false, kicker, toolbar, panel, slotsInPanel, stickyViewer, bottomBar }: Props) {
+export function ArmoryView({ loading = false, kicker, toolbar, panel, slotsInPanel, stickyViewer, bottomBar, after, canEdit = true }: Props) {
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const setReady = useUi((s) => s.setReady);
   const setBottomBar = useUi((s) => s.setBottomBar);
@@ -114,14 +119,25 @@ export function ArmoryView({ loading = false, kicker, toolbar, panel, slotsInPan
               )}
             </main>
             <StatsPanel />
+            {after}
           </div>
         </div>
         <footer className="foot">
-          <span className="foot-desk">Hover a slot for details · click to swap gear · hold ⇧ to compare · drag the player to spin him</span>
-          <span className="foot-touch">Tap a slot to swap gear · drag the player to spin him</span>
+          {canEdit ? (
+            <>
+              <span className="foot-desk">Hover a slot for details · click to swap gear · click gear on the player to inspect it · drag the player to spin him</span>
+              <span className="foot-touch">Tap a slot to swap gear · tap gear on the player to inspect it · drag to spin him</span>
+            </>
+          ) : (
+            <>
+              <span className="foot-desk">Click any slot or gear on the player for full details · drag the player to spin him</span>
+              <span className="foot-touch">Tap any slot or gear on the player for details · drag to spin him</span>
+            </>
+          )}
         </footer>
       </div>
       {bottomBar}
+      <GearDetailHost canEdit={canEdit} />
     </>
   );
 }

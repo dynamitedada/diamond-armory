@@ -15,6 +15,8 @@ let handles: ViewerHandles | null = null;
 /** @internal set by <ModelViewer/> */
 export function registerViewer(h: ViewerHandles | null) {
   handles = h;
+  // test hook: lets automated checks project gear positions to the screen
+  if (import.meta.env.DEV) (window as unknown as { __daViewer?: ViewerHandles | null }).__daViewer = h;
 }
 
 /** Render the current frame and return it as a PNG data URL (null if the viewer is not mounted). */

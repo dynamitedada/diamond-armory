@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { canEdit, getProfile, updateProfile, type ProfileRecord } from '../data/api';
+import { useAuth } from '../data/auth';
+import { setMyProfile } from '../state/account';
+import { navigate, profilePath, useHashQuery } from '../router';
+import { Highlights } from '../ui/film/Highlights';
+import { openSignIn } from '../ui/SignIn';
 import { useArmory } from '../state/store';
 import { cacheProfile, cachedProfile, isFresh, clearFresh } from '../state/draft';
 import {
@@ -24,6 +29,9 @@ type Load =
 const ShareIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 3v13M7 8l5-5 5 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6" /></svg>
 );
+const FilmGlyph = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="M10 9.5v5l4.5-2.5z" fill="currentColor" /></svg>
+);
 const EditIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" /></svg>
 );
@@ -34,6 +42,7 @@ export function ProfilePage({ slug }: { slug: string }) {
     return c ? { status: 'ready', record: c } : { status: 'loading' };
   });
   const [retry, setRetry] = useState(0);
+  const accountId = useAuth((s) => s.account?.id ?? null);
 
   useEffect(() => {
     let alive = true;
@@ -43,7 +52,10 @@ export function ProfilePage({ slug }: { slug: string }) {
         if (!alive) return;
         if (rec) {
           cacheProfile(rec);
-          setLoad((cur) => (cur.status === 'ready' && cur.record.updated_at === rec.updated_at ? cur : { status: 'ready', record: rec }));
+          setLoad((cur) =>
+            cur.status === 'ready' && cur.record.updated_at === rec.updated_at && cur.record.owner_id === rec.owner_id
+              ? cur
+              : { status: 'ready', record: rec });
         } else if (!hadCache) setLoad({ status: 'notfound' });
       })
       .catch((err) => {
@@ -51,7 +63,7 @@ export function ProfilePage({ slug }: { slug: string }) {
         setLoad({ status: 'error', message: err instanceof Error ? err.message : 'Network error' });
       });
     return () => { alive = false; };
-  }, [slug, retry]);
+  }, [slug, retry, accountId]);
 
   if (load.status === 'notfound') return <NotFound kind="player" />;
   if (load.status === 'error') {
@@ -68,7 +80,12 @@ export function ProfilePage({ slug }: { slug: string }) {
 
 function ProfileView({ slug, record }: { slug: string; record: ProfileRecord | null }) {
   const isMobile = useMediaQuery(MOBILE_QUERY);
-  const owner = canEdit(slug);
+  const accountId = useAuth((s) => s.account?.id ?? null);
+  const ownerId = record?.owner_id ?? null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- canEdit reads the signed-in account
+  const owner = useMemo(() => canEdit(slug, record), [slug, record, accountId]);
+  const linked = Boolean(ownerId && ownerId === accountId);
+  const query = useHashQuery();
   const equipped = useArmory((s) => s.equipped);
   const pickerSlot = useUi((s) => s.pickerSlot);
   const [saved, setSaved] = useState<ProfileRecord | null>(record);
@@ -82,6 +99,23 @@ function ProfileView({ slug, record }: { slug: string; record: ProfileRecord | n
   const { errors, touch, revealAll, reset: resetErrors } = useVisibleErrors(fields ?? recordToFieldsFallback);
 
   useEffect(() => { if (fresh) clearFresh(slug); }, [fresh, slug]);
+
+  // visitors inspect gear; owners swap it
+  useEffect(() => {
+    useUi.getState().setSlotClick(owner ? 'pick' : 'inspect');
+  }, [owner]);
+  useEffect(() => () => useUi.getState().setSlotClick('pick'), []);
+
+  // #/p/<slug>?edit=1 (the nav's "Edit your player"): open the editor, then tidy the URL
+  const wantsEdit = query.get('edit') === '1';
+  useEffect(() => {
+    if (!wantsEdit || !saved) return;
+    if (owner) {
+      setEditing(true);
+      scrollPanelIntoView();
+    }
+    navigate(profilePath(slug), { replace: true });
+  }, [wantsEdit, owner, saved, slug]);
 
   const apply = useCallback((rec: ProfileRecord) => {
     const a = useArmory.getState();
@@ -154,6 +188,7 @@ function ProfileView({ slug, record }: { slug: string; record: ProfileRecord | n
       const next: ProfileRecord = { ...saved, ...input, updated_at: new Date().toISOString() };
       appliedAt.current = next.updated_at;
       cacheProfile(next);
+      if (next.owner_id && next.owner_id === accountId) setMyProfile(next);
       setSaved(next);
       setFields(recordToFields(next));
       useArmory.getState().setPlayer(recordToPlayer(next));
@@ -167,28 +202,57 @@ function ProfileView({ slug, record }: { slug: string; record: ProfileRecord | n
 
   const first = displayName ? nameParts(displayName).first : '';
 
+  const bio = saved?.bio?.trim();
   const toolbar = saved ? (
-    <div className={`profile-bar ${owner ? 'is-owner' : 'is-visitor'}`}>
-      {owner ? (
-        <p className="profile-note"><span className="pill pill-gold">Your player</span> Only this device can edit this player.</p>
-      ) : (
-        <p className="profile-note">
-          <span className="pill">Visiting</span> Tap any gear to try it on. Changes you make here aren't saved.
+    <>
+      {bio && (
+        <p className="profile-bio">
+          <span className="profile-bio-mark" aria-hidden>“</span>
+          {bio}
         </p>
       )}
-      <div className="profile-actions">
+      <div className={`profile-bar ${owner ? 'is-owner' : 'is-visitor'}`}>
         {owner ? (
-          <button type="button" className={`btn ${editing ? 'btn-ghost on' : 'btn-ghost'}`} aria-pressed={editing} onClick={() => { setEditing((e) => !e); if (!editing) scrollPanelIntoView(); }}>
-            <EditIcon /> {editing ? 'Done editing' : 'Edit player'}
-          </button>
+          <p className="profile-note">
+            <span className="pill pill-gold">Your player</span>{' '}
+            {linked ? (
+              'Linked to your account. Edit it from any device.'
+            ) : accountId ? (
+              'Saved on this device.'
+            ) : (
+              <>
+                Only this device can edit this player.{' '}
+                <button type="button" className="linkish" onClick={() => openSignIn({ reason: 'Sign in to link this player to your account and add highlights.' })}>
+                  Sign in
+                </button>{' '}
+                to keep it safe and add highlights.
+              </>
+            )}
+          </p>
         ) : (
-          <a className="btn btn-primary" href="#/new">Build your own</a>
+          <p className="profile-note">
+            <span className="pill">Visiting</span> Tap any gear for the full card. Try-ons here aren't saved.
+          </p>
         )}
-        <button type="button" className="btn btn-ghost" data-share-trigger onClick={() => setShareOpen(true)}>
-          <ShareIcon /> Share
-        </button>
+        <div className={`profile-actions ${owner ? 'n3' : ''}`}>
+          {owner ? (
+            <>
+              <button type="button" className={`btn ${editing ? 'btn-ghost on' : 'btn-ghost'}`} aria-pressed={editing} onClick={() => { setEditing((e) => !e); if (!editing) scrollPanelIntoView(); }}>
+                <EditIcon /> {editing ? <>Done<span className="lbl-long"> editing</span></> : <>Edit<span className="lbl-long"> player</span></>}
+              </button>
+              <a className="btn btn-ghost" href="#/film">
+                <FilmGlyph /> <span className="lbl-long">Manage film</span><span className="lbl-short">Film</span>
+              </a>
+            </>
+          ) : (
+            <a className="btn btn-primary" href="#/new">Build your own</a>
+          )}
+          <button type="button" className="btn btn-ghost" data-share-trigger onClick={() => setShareOpen(true)}>
+            <ShareIcon /> Share
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   ) : null;
 
   const panel = owner && editing && fields ? (
@@ -243,6 +307,10 @@ function ProfileView({ slug, record }: { slug: string; record: ProfileRecord | n
         slotsInPanel={Boolean(panel)}
         stickyViewer={Boolean(panel) && step > 0}
         bottomBar={bottomBar}
+        canEdit={owner}
+        after={saved ? (
+          <Highlights ownerId={ownerId} isOwner={owner} firstName={first || 'Player'} />
+        ) : undefined}
       />
       {saved && (
         <ShareSheet open={shareOpen} onClose={() => setShareOpen(false)} slug={slug} name={displayName!} fresh={fresh} />
@@ -252,5 +320,5 @@ function ProfileView({ slug, record }: { slug: string; record: ProfileRecord | n
 }
 
 const recordToFieldsFallback: ProfileFields = {
-  name: '', nickname: '', team: '', number: '0', position: 'Utility', bats: 'R', throws: 'R', skin_tone: '#c68a5e', hair_color: '#141010',
+  name: '', nickname: '', team: '', number: '0', position: 'Utility', bats: 'R', throws: 'R', skin_tone: '#c68a5e', hair_color: '#141010', bio: '',
 };

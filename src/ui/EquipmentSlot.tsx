@@ -27,6 +27,7 @@ export function EquipmentSlot({ slot, side, index }: Props) {
   const ready = useUi((s) => s.ready);
   const pickerOpen = useUi((s) => s.pickerSlot === slot);
   const openPicker = useUi((s) => s.openPicker);
+  const inspectMode = useUi((s) => s.slotClick === 'inspect') && Boolean(item);
   const ref = useRef<HTMLButtonElement>(null);
   const [anchor, setAnchor] = useState<DOMRect | null>(null);
 
@@ -40,14 +41,21 @@ export function EquipmentSlot({ slot, side, index }: Props) {
         type="button"
         className={`slot slot-${side} ${ready ? 'in' : 'loading'} ${pickerOpen ? 'active' : ''}`}
         style={{ '--i': index } as CSSProperties}
-        aria-haspopup="listbox"
-        aria-expanded={pickerOpen}
+        data-slot={slot}
+        aria-haspopup={inspectMode ? 'dialog' : 'listbox'}
+        aria-expanded={inspectMode ? undefined : pickerOpen}
         aria-label={`${SLOT_LABELS[slot]}: ${item ? item.name : 'empty'}`}
         onMouseEnter={() => { setAnchor(ref.current!.getBoundingClientRect()); setHovered(item); }}
         onMouseLeave={() => { setAnchor(null); setHovered(undefined); }}
         onFocus={() => setHovered(item)}
         onBlur={() => setHovered(undefined)}
-        onClick={() => { setAnchor(null); openPicker(pickerOpen ? undefined : slot); }}
+        onClick={() => {
+          setAnchor(null);
+          if (inspectMode && item) {
+            setHovered(undefined);
+            useUi.getState().showDetail(item);
+          } else openPicker(pickerOpen ? undefined : slot);
+        }}
       >
         <SlotIcon item={item} slot={slot} />
         <span className="slot-label">

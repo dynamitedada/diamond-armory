@@ -1,9 +1,6 @@
-import { useEffect, useId, useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react';
+import { useId, useRef, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
-import { useUi } from './theme';
-
-const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+import { FOCUSABLE, useDialog } from '../lib/useDialog';
 
 interface Props {
   open: boolean;
@@ -26,58 +23,7 @@ interface Props {
 export function Modal({ open, onClose, title, subtitle, children, initialFocus, fallbackFocus, className }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const titleId = useId();
-  const onCloseRef = useRef(onClose);
-  const fallbackRef = useRef(fallbackFocus);
-  useLayoutEffect(() => {
-    onCloseRef.current = onClose;
-    fallbackRef.current = fallbackFocus;
-  });
-
-  useEffect(() => {
-    if (!open) return;
-    useUi.getState().openPicker(undefined);
-    const prev = document.activeElement as HTMLElement | null;
-    const root = document.getElementById('root');
-    root?.setAttribute('inert', '');
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const el = ref.current!;
-    const first = initialFocus?.current ?? el.querySelector<HTMLElement>(`.modal-body :is(${FOCUSABLE})`) ?? el;
-    first.focus({ preventScroll: true });
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        e.stopPropagation();
-        onCloseRef.current();
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const items = [...el.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((n) => n.offsetParent !== null || n === document.activeElement);
-      if (!items.length) {
-        e.preventDefault();
-        return;
-      }
-      const a = items[0];
-      const z = items[items.length - 1];
-      if (e.shiftKey && (document.activeElement === a || !el.contains(document.activeElement))) {
-        e.preventDefault();
-        z.focus();
-      } else if (!e.shiftKey && (document.activeElement === z || !el.contains(document.activeElement))) {
-        e.preventDefault();
-        a.focus();
-      }
-    };
-    document.addEventListener('keydown', onKey, true);
-    return () => {
-      document.removeEventListener('keydown', onKey, true);
-      root?.removeAttribute('inert');
-      document.body.style.overflow = prevOverflow;
-      const back = prev && prev.isConnected && prev !== document.body ? prev : fallbackRef.current?.();
-      back?.focus?.({ preventScroll: true });
-    };
-  }, [open, initialFocus]);
+  useDialog(ref, open, { onClose, initialFocus, fallbackFocus, firstSelector: `.modal-body :is(${FOCUSABLE})` });
 
   if (!open) return null;
   return createPortal(

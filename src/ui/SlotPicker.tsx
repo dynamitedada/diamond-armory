@@ -94,6 +94,8 @@ export function SlotPicker({ slot, anchorEl, placement }: Props) {
   // Keyboard handling lives on window so it works no matter where focus is.
   const onKeyRef = useRef<(e: KeyboardEvent) => void>(() => {});
   onKeyRef.current = (e: KeyboardEvent) => {
+    // let the head buttons (Details / Done) handle their own Enter / Space
+    if ((e.key === 'Enter' || e.key === ' ') && (e.target as HTMLElement | null)?.closest?.('.picker-head button')) return;
     if (e.key === 'Escape') { e.preventDefault(); close(); anchorEl.focus(); }
     else if (e.key === 'ArrowDown') { e.preventDefault(); preview((active + 1) % rows.length, true); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); preview((active - 1 + rows.length) % rows.length, true); }
@@ -121,6 +123,19 @@ export function SlotPicker({ slot, anchorEl, placement }: Props) {
         <div className="picker-head">
           <span>{SLOT_LABELS[slot]}</span>
           <span className="picker-hint">↑↓ preview · ⏎ equip · ⇧ compare</span>
+          <button
+            type="button"
+            className="picker-close picker-details"
+            disabled={!rows[active]}
+            onClick={() => {
+              const it = rows[active];
+              if (!it) return;
+              close();
+              useUi.getState().showDetail(it);
+            }}
+          >
+            Details
+          </button>
           <button type="button" className="picker-close" onClick={() => { close(); anchorEl.focus({ preventScroll: true }); }} aria-label="Close">Done</button>
         </div>
         <ul

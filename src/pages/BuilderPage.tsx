@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createProfile } from '../data/api';
+import { currentAccountId, useAuth } from '../data/auth';
+import { refreshMe, setMyProfile, useMe } from '../state/account';
 import { useArmory } from '../state/store';
 import { cacheProfile, markFresh, useDraft } from '../state/draft';
 import { fieldsToInput, fieldsToPlayer, loadoutIds, validateFields, type ProfileFields } from '../lib/profile';
@@ -11,7 +13,28 @@ import { scheduleFeedbackPrompt } from '../ui/Feedback';
 import { useMediaQuery } from '../ui/theme';
 import { focusField, scrollPanelIntoView, useVisibleErrors } from './builderShared';
 
+/** Signed in with a player already: the Build tab edits that one (one player per account). */
 export function BuilderPage() {
+  const ready = useAuth((s) => s.ready);
+  const account = useAuth((s) => s.account);
+  const me = useMe((s) => s.profile);
+  // set once this page saves a new player, so the redirect below doesn't fire for it
+  const [created, setCreated] = useState(false);
+  const mine = account && me && !created ? me : null;
+  useEffect(() => {
+    if (mine) navigate(`${profilePath(mine.slug)}?edit=1`, { replace: true });
+  }, [mine]);
+  if (!created && (!ready || (account && me === undefined) || mine)) {
+    return (
+      <main className="app notfound" aria-busy>
+        <div className="viewer-veil static" role="status"><span className="spinner" aria-hidden /> Opening your player…</div>
+      </main>
+    );
+  }
+  return <NewPlayer onCreated={() => setCreated(true)} />;
+}
+
+function NewPlayer({ onCreated }: { onCreated: () => void }) {
   useTitle('Build your player');
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const fields = useDraft((s) => s.fields);
@@ -63,8 +86,14 @@ export function BuilderPage() {
     const input = fieldsToInput(fields, loadoutIds(useArmory.getState().equipped));
     try {
       const slug = await createProfile(input);
+      onCreated();
       const now = new Date().toISOString();
-      cacheProfile({ ...input, slug, created_at: now, updated_at: now });
+      const rec = { ...input, bio: input.bio ?? null, owner_id: currentAccountId(), slug, created_at: now, updated_at: now };
+      cacheProfile(rec);
+      if (rec.owner_id) {
+        setMyProfile(rec);
+        void refreshMe();
+      }
       markFresh(slug);
       saved.current = true;
       scheduleFeedbackPrompt();

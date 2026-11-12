@@ -225,6 +225,28 @@ export function BuilderPanel({ title, fields, onChange, errors, onBlurField, isM
               options={[{ v: 'L', label: 'L', title: 'Left' }, { v: 'R', label: 'R', title: 'Right' }]}
             />
           </div>
+          <Field
+            k="bio"
+            label="Bio"
+            optional
+            error={errors.bio}
+            hint="A line or two for your card: your game, your walk-up energy."
+            counter={<span className={`field-count ${fields.bio.length >= LIMITS.bio ? 'max' : ''}`}>{fields.bio.length}/{LIMITS.bio}</span>}
+          >
+            <textarea
+              id={fieldId('bio')}
+              className="input textarea bio-input"
+              value={fields.bio}
+              maxLength={LIMITS.bio}
+              rows={3}
+              autoCapitalize="sentences"
+              placeholder="e.g. Leadoff spark. Steals on the first pitch. Never met a curveball he didn't like."
+              aria-invalid={Boolean(errors.bio)}
+              aria-describedby={describe('bio')}
+              onChange={(e) => onChange({ bio: e.target.value })}
+              onBlur={() => onBlurField('bio')}
+            />
+          </Field>
         </div>
       )}
 

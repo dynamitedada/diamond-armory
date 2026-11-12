@@ -70,6 +70,12 @@ interface UiState {
   /** Bumped whenever gear is committed from a picker (phones scroll the model back into view). */
   commitNonce: number;
   bumpCommit: () => void;
+  /** What clicking a gear slot does: open the swap picker (owners, builder) or the detail popup (visitors). */
+  slotClick: 'pick' | 'inspect';
+  setSlotClick: (v: 'pick' | 'inspect') => void;
+  /** Item shown in the expanded gear detail popup. */
+  detailItem?: Item;
+  showDetail: (item?: Item) => void;
 }
 export const useUi = create<UiState>((set) => ({
   pickerSlot: undefined,
@@ -80,6 +86,10 @@ export const useUi = create<UiState>((set) => ({
   setBottomBar: (bottomBar) => set({ bottomBar }),
   commitNonce: 0,
   bumpCommit: () => set((s) => ({ commitNonce: s.commitNonce + 1 })),
+  slotClick: 'pick',
+  setSlotClick: (slotClick) => set({ slotClick }),
+  detailItem: undefined,
+  showDetail: (detailItem) => set({ detailItem }),
 }));
 
 /** Live media query match. */
