@@ -1,4 +1,5 @@
 import type { Item, PlayerProfile, Slot } from './types';
+import { NEW_ITEMS, NEW_SET_BONUSES } from './catalog';
 
 export const PLAYER: PlayerProfile = {
   name: "Manny 'Nitro' Gauz",
@@ -25,11 +26,13 @@ export const SET_BONUSES: Record<string, SetBonus[]> = {
   'Sandlot Classics': [
     { pieces: 2, text: '+5 Contact. Rookies in the dugout gain +3 Morale.' },
   ],
+  ...NEW_SET_BONUSES,
 };
 
 const NOS = 'Night Owl Signature';
 
-export const CATALOG: Item[] = [
+/** The original 60 items. IDs are stored in player loadouts, so never rename or remove them. */
+export const LEGACY_CATALOG: Item[] = [
   // ───────────────────────── HELMET
   { id: 'helm-batting-practice', slot: 'helmet', name: 'Batting Practice Lid', rarity: 'common', ovr: 61, type: 'Helmet · Single Flap',
     stats: { contact: 2, fielding: 1 }, flavor: 'Smells like the equipment bag from 2014.', price: 120, icon: '⛑️',
@@ -258,6 +261,8 @@ export const CATALOG: Item[] = [
     visual: { primary: '#ffb020', variant: 'salsa' } },
 ];
 
+export const CATALOG: Item[] = [...LEGACY_CATALOG, ...NEW_ITEMS];
+
 export const DEFAULT_LOADOUT: string[] = [
   'helm-night-owl', 'cap-backwards-bodega', 'eye-mirror-wrap', 'chain-cuban', 'jersey-midnight',
   'under-neon-sleeve', 'bg-hyperlight', 'wb-neon', /* elbowGuard empty */ 'belt-gator', 'pants-midnight',
@@ -268,10 +273,12 @@ export const SLOT_LABELS: Record<Slot, string> = {
   helmet: 'Helmet', cap: 'Cap', eyewear: 'Eyewear', chain: 'Chain', jersey: 'Jersey', undershirt: 'Undershirt',
   battingGloves: 'Batting Gloves', wristband: 'Wristband', elbowGuard: 'Elbow Guard', belt: 'Belt', pants: 'Pants',
   socks: 'Socks', cleats: 'Cleats', bat: 'Bat', glove: 'Glove', walkupSong: 'Walk-up Song',
+  slidingMitt: 'Sliding Mitt', legGuard: 'Leg Guard',
 };
 
 /** Silhouette glyphs shown in empty slots. */
 export const SLOT_GLYPHS: Record<Slot, string> = {
   helmet: '⛑️', cap: '🧢', eyewear: '🕶️', chain: '📿', jersey: '👕', undershirt: '🎽', battingGloves: '🧤',
   wristband: '⭕', elbowGuard: '🛡️', belt: '➖', pants: '👖', socks: '🧦', cleats: '👟', bat: '🏏', glove: '🧤', walkupSong: '🎵',
+  slidingMitt: '🖐️', legGuard: '🦵',
 };
